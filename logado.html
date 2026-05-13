@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mural</title>
+</head>
+<body>
+    
+    <button class="botao_trasparente" onclick="location.href='perfil.html'">👤 meu perfil</button>
+    <h1 id="nome"></h1>
+   
+    <textarea maxlength="200" class="input" id="post" placeholder="Digite algo legal!"></textarea>
+    <h2>Escolha a cor do seu post-it!</h2>
+    <select id="cor">
+    <option value="#ff6b6b">Vermelho</option>
+    <option value="#ff9f43">Laranja</option>
+    <option value="#ffd32a">Amarelo</option>
+    <option value="#0be881">Verde</option>
+    <option value="#0fbcf9">Azul</option>
+    <option value="#a29bfe">Lilás</option>
+    <option value="#fd79a8">Rosa</option>
+    <option value="#00d2d3">Ciano</option>
+    <option value="#ff4d4d">Coral</option>
+    <option value="#6c5ce7">Roxo</option>
+</select>
+    <button class="botao_destaque" onclick="postar()">Postar</button>
+    <div id="status_api"></div>
+    <div id="mural"></div>
+</body>
+</html>
+<script>
+    
+    document.getElementById('nome').innerHTML = localStorage.getItem("nome")
+    const usuario_id = localStorage.getItem("usuario_id")
+    async function postar(){
+        const post = document.getElementById('post').value
+        const cor = document.getElementById('cor').value
+
+        const resposta = await fetch('http://127.0.0.1:8000/posts',{
+            headers:{
+                "Content-type":"application/json"
+            },
+            method:"POST",
+            body:JSON.stringify({
+               "post":post,
+               usuario_id:usuario_id,
+               cor:cor
+
+            })
+        })
+        const dados=await resposta.json()
+
+        
+        document.getElementById('status_api').innerHTML=dados.status
+        carregarPosts()
+    }
+
+async function carregarPosts() {
+    const resposta = await fetch('http://127.0.0.1:8000/ver_posts')  
+    const dados = await resposta.json() 
+
+    const mural = document.getElementById('mural')
+    mural.innerHTML = ''
+    dados.posts.forEach(p => {
+    const rot = (Math.random() * 6 - 3).toFixed(1)
+    mural.innerHTML += `
+        <div class="postit" style="background:${p.cor}; --rot:${rot}deg">
+            <span  id = 'nome'class="autor">— ${p.nome}</span>
+            <span class='post'>${p.texto}</span>
+            <span class='data'>${p.data_criacao}</span>
+            <button class="botao_like" onclick="like(${p.id},this)"><i class="fa-regular fa-heart"></i></button>
+        
+            
+        </div>`
+})
+}
+carregarPosts()
+async function like(post_id,botao) {
+    botao.classList.add("com_like")
+    setTimeout(() => botao.classList.remove("com_like"),400)
+    const resposta= await fetch(`http://127.0.0.1:8000/like/${post_id}`,{
+        headers :{"Content-type":"application/json"},
+         method:"POST",
+        body:JSON.stringify({
+            usuario_id:usuario_id,
+        })
+
+
+    })
+    const dados= await resposta.json()
+    document.getElementById('status_api').innerHTML=dados.status
+    if (dados.status === 'like dado!'){
+        botao.innerHTML =  '<i class="fa-solid fa-heart"></i>'
+    }else{
+        botao.innerHTML = '<i class="fa-regular fa-heart"></i>'
+    }
+}
+
+</script>

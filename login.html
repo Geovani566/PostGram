@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>login</title>
+</head>
+
+<body>
+    <h1>Preencha os dados para efetuar seu login</h1>
+    <input type="text" class="input" id="email" placeholder="Digite seu email:">
+    <input type="password" class="input"id="senha" placeholder="Digite sua senha:">
+    <button  class="botao_destaque" onclick="login()">Entrar</button>
+
+    <div id="status_api"></div>
+
+    <h2>Não tem uma conta?</h2>
+<button class="botao_trasparente" onclick="cadastrar()">Criar conta</button>
+</body>
+
+</html>
+<script>
+    async function login() {
+        const email = document.getElementById("email").value
+        const senha = document.getElementById("senha").value
+
+        const resposta = await fetch("http://127.0.0.1:8000/login", {
+
+            headers: {
+                "Content-type": "application/json"
+            },
+
+
+            method: "POST",
+            body: JSON.stringify({
+                email: email,
+                senha: senha
+            })
+        })
+
+        const dados = await resposta.json()
+        document.getElementById("status_api").innerText = dados.status
+        if(dados.status =="login efetuado com sucesso!"){
+            localStorage.setItem("usuario_id", dados.usuario_id)
+            localStorage.setItem("nome", dados.nome)
+            window.location.href = "logado.html"
+        }
+        
+
+    }
+    function cadastrar() {
+
+        window.location.href = "cadastro.html"
+
+    }
+</script>

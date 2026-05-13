@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>👤 <span id="nome"></span></h1>
+    <h2 id="contador"></h2>
+    <button class="botao_trasparente" onclick="location.href='logado.html'">← voltar ao mural</button>
+    <div class="postit" id="meus_posts" ></div>
+    
+    <script>
+        const usuario_id = localStorage.getItem('usuario_id')
+        const nome = localStorage.getItem('nome')
+
+        if (!usuario_id) location.href = 'login.html'
+
+        document.getElementById('nome').textContent = nome
+
+        async function carregarPosts() {
+            const res = await fetch(`http://localhost:8000/meus_posts/${usuario_id}`)
+            const data = await res.json()
+            const container = document.getElementById('meus_posts')
+            const contador = document.getElementById('contador')
+            container.innerHTML = ''
+            contador.textContent = `${data.posts.length} post(s)`
+
+            data.posts.forEach(p => {
+                const rot = (Math.random() * 6 - 3).toFixed(1)
+                container.innerHTML += `
+                <div class="postit" style="background:${p.cor}; --rot:${rot}deg">
+                    <span class="autor">— ${nome}</span>
+                    <span class="texto">${p.texto}</span>
+                    <span class="data">${p.data_criacao}</span>
+                    <button class="botao_deletar" onclick="deletar(${p.id})">✕</button>
+                    
+                </div>`
+            })
+        }
+
+        async function deletar(post_id) {
+            await fetch(`http://localhost:8000/deletar_posts/${post_id}`, {
+                method: 'DELETE',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ usuario_id: parseInt(usuario_id) })
+            })
+            carregarPosts()
+        }          
+
+        carregarPosts()
+    </script>
+</body>
+</html>

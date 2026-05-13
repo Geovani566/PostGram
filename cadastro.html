@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar conta</title>
+</head>
+<body>
+    <h1>Preencha os dados para criar sua conta</h1>
+    <input type="text" class="input" id="nome" placeholder="Digite seu nome:">
+    <input type="text" class="input" id="email" placeholder="Digite seu email:">
+    <input type="password" class="input"id="senha" placeholder="Crie sua senha:">
+    <button class="botao_destaque" onclick="cadastrar()">Criar conta</button>
+    <div id="status_api"></div>
+     <button class="botao_trasparente" onclick="logar()">Fazer login</button>
+</body>
+
+</html>
+<script>
+     async function cadastrar() {
+        const nome = document.getElementById('nome').value
+        const email = document.getElementById('email').value
+        const senha = document.getElementById('senha').value
+
+        const dados = await fetch("http://127.0.0.1:8000/cadastrar",{
+            headers:
+            {
+                "Content-type": "application/JSON"
+                
+            },
+            method:"POST",
+            body:JSON.stringify({
+                email:email,
+                senha:senha,
+                nome:nome,
+
+            })
+        
+
+        })
+        const resposta = await dados.json()
+        localStorage.setItem("nome", document.getElementById('nome').value)
+        document.getElementById('status_api').innerText=resposta.status
+    }
+    function logar(){
+        window.location.href = "login.html"
+
+    }
+</script>
