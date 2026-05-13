@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import pymysql
 import os
 from dotenv import load_dotenv
-
+load_dotenv()
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -40,6 +40,7 @@ async def login(request : Request):
     senha=dados["senha"]
     connection = get_connection()
 
+    conn=get_connection()
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM usuarios WHERE  email= %s AND senha =%s",(email,senha))
         usuario = cursor.fetchone()
@@ -54,7 +55,7 @@ async def login(request : Request):
             return {
                 "status":"usuario não encontrado!"
             }
-    connection.close()
+    conn.close()
         
 @app.post("/cadastrar")
 async def cadastrar(request: Request):
@@ -65,7 +66,7 @@ async def cadastrar(request: Request):
     
     conn =get_connection()
     with conn.cursor() as cursor:
-        cursor.execute("SELECT id FROM usuarios WHERE email=%s",(email))
+        cursor.execute("SELECT id FROM usuarios WHERE email=%s",(email,))
         if cursor.fetchone() :
             cursor.close()
             return {
@@ -142,7 +143,7 @@ async def meus_posts(usuario_id:int):
 @app.delete("/deletar_posts/{post_id}")
 async def deletar_posts(post_id:int ,request:Request):
     dados = await request.json()
-    usuario_id = dados['usuario_id']  # segurança: só dono pode deletar
+    usuario_id = dados['usuario_id']
 
     conn = get_connection()
     with conn.cursor() as cursor:

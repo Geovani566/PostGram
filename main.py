@@ -1,11 +1,18 @@
 import pymysql
+import os 
+from dotenv import load_dotenv
+load_dotenv()
 
-connection = pymysql.connect(
-    host='localhost',
-    user='usuario',
-    password='senha',
-    database='base_de_dados',
-)
+def get_connection():
+    return pymysql.connect(
+        host=os.getenv('MYSQL_HOST'),
+        user=os.getenv('MYSQL_USER'),
+        password=os.getenv('MYSQL_PASSWORD'),
+        database=os.getenv('MYSQL_DATABASE'),
+        )
+
+connection=get_connection()
+
 
 with connection.cursor() as cursor:
 

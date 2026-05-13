@@ -23,7 +23,7 @@
         document.getElementById('nome').textContent = nome
 
         async function carregarPosts() {
-            const res = await fetch(`http://localhost:8000/meus_posts/${usuario_id}`)
+            const res = await fetch(`https://postgram-47cg.onrender.com/meus_posts/${usuario_id}`)
             const data = await res.json()
             const container = document.getElementById('meus_posts')
             const contador = document.getElementById('contador')
@@ -44,7 +44,7 @@
         }
 
         async function deletar(post_id) {
-            await fetch(`http://localhost:8000/deletar_posts/${post_id}`, {
+            await fetch(`https://postgram-47cg.onrender.com/deletar_posts/${post_id}`, {
                 method: 'DELETE',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ usuario_id: parseInt(usuario_id) })

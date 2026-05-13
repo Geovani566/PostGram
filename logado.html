@@ -41,7 +41,7 @@
         const post = document.getElementById('post').value
         const cor = document.getElementById('cor').value
 
-        const resposta = await fetch('http://127.0.0.1:8000/posts',{
+        const resposta = await fetch('https://postgram-47cg.onrender.com/posts',{
             headers:{
                 "Content-type":"application/json"
             },
@@ -61,7 +61,7 @@
     }
 
 async function carregarPosts() {
-    const resposta = await fetch('http://127.0.0.1:8000/ver_posts')  
+    const resposta = await fetch('https://postgram-47cg.onrender.com/ver_posts')  
     const dados = await resposta.json() 
 
     const mural = document.getElementById('mural')
@@ -83,7 +83,7 @@ carregarPosts()
 async function like(post_id,botao) {
     botao.classList.add("com_like")
     setTimeout(() => botao.classList.remove("com_like"),400)
-    const resposta= await fetch(`http://127.0.0.1:8000/like/${post_id}`,{
+    const resposta= await fetch(`https://postgram-47cg.onrender.com/like/${post_id}`,{
         headers :{"Content-type":"application/json"},
          method:"POST",
         body:JSON.stringify({
