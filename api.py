@@ -25,7 +25,14 @@ def get_connection():
 
 
 
-
+@app.get("/testar_db")
+def testar_db():
+    try:
+        conn = get_connection()
+        conn.close()
+        return {"status": "conectou!"}
+    except Exception as e:
+        return {"erro": str(e)}
 
 @app.get("/")
 def home():
