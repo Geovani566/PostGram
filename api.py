@@ -161,20 +161,25 @@ async def meus_posts(usuario_id:int):
             "data_criacao":p[3].strftime("%d/%m/%Y") if p[3] else ""})
     return  {"posts":lista}
         
-@app.delete("/deletar_posts/{post_id}")
-async def deletar_posts(post_id:int ,request:Request):
-    dados = await request.json()
-    usuario_id = dados['usuario_id']
+@app.delete("/deletar_posts/{post_id}/{usuario_id}")
+async def deletar_posts(post_id:int, usuario_id:int):
 
     conn = get_connection()
+
     with conn.cursor() as cursor:
-        cursor.execute("DELETE FROM posts WHERE id = %s AND usuario_id = %s", (post_id, usuario_id))
+        cursor.execute(
+            "DELETE FROM posts WHERE id = %s AND usuario_id = %s",
+            (post_id, usuario_id)
+        )
+
         conn.commit()
         deletados = cursor.rowcount
+
     conn.close()
 
     if deletados == 0:
         return {"status": "Post não encontrado ou sem permissão!"}
+
     return {"status": "Post deletado!"}
 
 @app.post('/like/{post_id}')

@@ -43,16 +43,16 @@
             })
         }
 
-        async function deletar(post_id) {
-            await fetch(`https://postgram-47cg.onrender.com/deletar_posts/${post_id}`, {
-                method: 'DELETE',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ usuario_id: parseInt(usuario_id) })
-            })
-            carregarPosts()
-        }          
-
+        await fetch(
+    `https://postgram-47cg.onrender.com/deletar_posts/${post_id}/${usuario_id}`,
+    {
+        method: 'DELETE'
+    }
+)
         carregarPosts()
+                 
+
+        
     </script>
 </body>
 </html>
