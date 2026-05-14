@@ -27,12 +27,24 @@ def get_connection():
 
 @app.get("/testar_db")
 def testar_db():
+    import os
+    host = os.getenv('MYSQL_HOST')
+    port = os.getenv('MYSQL_PORT')
+    user = os.getenv('MYSQL_USER')
+    database = os.getenv('MYSQL_DATABASE')
+    
     try:
         conn = get_connection()
         conn.close()
         return {"status": "conectou!"}
     except Exception as e:
-        return {"erro": str(e)}
+        return {
+            "erro": str(e),
+            "host_lido": host,
+            "port_lido": port,
+            "user_lido": user,
+            "database_lido": database
+        }
 
 @app.get("/")
 def home():
