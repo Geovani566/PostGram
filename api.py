@@ -16,6 +16,7 @@ app.add_middleware(
 def get_connection():
     return pymysql.connect(
         host=os.getenv('MYSQL_HOST'),
+        port=int(os.getenv('MYSQSL_PORT',3306)),
         user=os.getenv('MYSQL_USER'),
         password=os.getenv('MYSQL_PASSWORD'),
         database=os.getenv('MYSQL_DATABASE'),
@@ -38,24 +39,26 @@ async def login(request : Request):
     dados=await request.json()
     email=dados["email"]
     senha=dados["senha"]
-    connection = get_connection()
+    conn = get_connection()
 
-    conn=get_connection()
-    with connection.cursor() as cursor:
+    
+    with conn.cursor() as cursor:
         cursor.execute("SELECT * FROM usuarios WHERE  email= %s AND senha =%s",(email,senha))
         usuario = cursor.fetchone()
         
         if usuario :
+            conn.close()
             return {
                 "status":"login efetuado com sucesso!",
                 "usuario_id":usuario[0],
                 "nome": usuario[1] 
             }
         else:
+            conn.close()
             return {
                 "status":"usuario não encontrado!"
             }
-    conn.close()
+    
         
 @app.post("/cadastrar")
 async def cadastrar(request: Request):
