@@ -16,13 +16,11 @@ app.add_middleware(
 def get_connection():
     return pymysql.connect(
         host=os.getenv('MYSQL_HOST'),
-        port=int(os.getenv('MYSQSL_PORT',3306)),
+        port=int(os.getenv('MYSQL_PORT')),
         user=os.getenv('MYSQL_USER'),
         password=os.getenv('MYSQL_PASSWORD'),
-        database=os.getenv('MYSQL_DATABASE'),
-        )
-
-
+        database=os.getenv('MYSQL_DATABASE')
+    )
 
 @app.get("/testar_db")
 async def testar_db():
