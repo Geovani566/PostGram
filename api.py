@@ -25,26 +25,39 @@ def get_connection():
 
 
 
-@app.get("/testar_db")
-def testar_db():
-    import os
-    host = os.getenv('MYSQL_HOST')
-    port = os.getenv('MYSQL_PORT')
-    user = os.getenv('MYSQL_USER')
-    database = os.getenv('MYSQL_DATABASE')
-    
+@app.post("/login")
+async def login(request: Request):
+
     try:
-        conn = get_connection()
-        conn.close()
-        return {"status": "conectou!"}
+        connection = get_connection()
     except Exception as e:
+        return {"erro_mysql": str(e)}
+
+    dados = await request.json()
+
+    email = dados["email"]
+    senha = dados["senha"]
+
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "SELECT * FROM usuarios WHERE email=%s AND senha=%s",
+            (email, senha)
+        )
+
+        usuario = cursor.fetchone()
+
+    connection.close()
+
+    if usuario:
         return {
-            "erro": str(e),
-            "host_lido": host,
-            "port_lido": port,
-            "user_lido": user,
-            "database_lido": database
+            "status": "login efetuado com sucesso!",
+            "usuario_id": usuario[0],
+            "nome": usuario[1]
         }
+
+    return {
+        "status": "usuario não encontrado!"
+    }
 
 @app.get("/")
 def home():
